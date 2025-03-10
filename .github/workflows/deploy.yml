@@ -29,10 +29,17 @@ jobs:
         run: |
           pytest prueba_uni.py
 
+      - name: Verificar configuración de AWS
+        run: |
+          aws sts get-caller-identity
+
       - name: Desplegar en AWS con Zappa
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}  
         run: |
           zappa status dev
           zappa status dev2
+          zappa update dev
+          zappa update dev2
