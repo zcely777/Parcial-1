@@ -31,7 +31,7 @@ jobs:
           
       - name: Crear y activar entorno virtual
         run: |
-          python3.9 -m venv env  
+          python3.9 -m venv env1  
           source env1/bin/activate
           curl -sS https://bootstrap.pypa.io/get-pip.py | python 
           python -m pip install --upgrade pip setuptools wheel
