@@ -12,8 +12,7 @@ def download_html(event, context):
     url = "https://casas.mitula.com.co/casas/bogota"
     s3 = boto3.client("s3")
     today = datetime.today().strftime("%Y-%m-%d")
-    session = requests.Session()  # Mantener cookies y mejorar persistencia
-
+    session = requests.Session()
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -21,16 +20,16 @@ def download_html(event, context):
         ),
         "Referer": "https://www.google.com/",
     }
-
     for i in range(1, 11):
         attempt = 0
-        while attempt < 3:  # Intentar hasta 3 veces
+        while attempt < 3:
             try:
                 response = session.get(
-                    f"{url}?page={i}", headers=headers, timeout=10
+                    f"{url}?page={i}",
+                    headers=headers,
+                    timeout=10
                 )
-                response.raise_for_status()  # Verificar que la respuesta es 200 OK
-
+                response.raise_for_status()
                 file_name = f"{today}-page{i}.html"
                 s3.put_object(
                     Bucket=S3_BUCKET,
@@ -39,17 +38,18 @@ def download_html(event, context):
                     ContentType="text/html",
                 )
                 print(f"✅ Guardado en S3: {file_name}")
-                break  # Salir del loop si todo está bien
-
+                break
             except RequestException as e:
                 attempt += 1
-                print(f"⚠ Error en pág. {i}, intento {attempt}: {e}")
-                time.sleep(2 ** attempt)  # Espera exponencial: 2s, 4s, 8s
-
+                print(f"⚠️ Error en pág. {i}, intento {attempt}: {e}")
+                time.sleep(2 ** attempt)
         if attempt == 3:
-            print(f"❌ Falló la descarga de la pág. {i} después de 3 intentos")
+            print(
+                f"❌ Falló la descarga de la pág. {i} después de 3 intentos"
+            )
 
 
 def lambda_handler(event, context):
     """Función Lambda para ejecutar la descarga de HTML."""
     download_html(event, context)
+    return {"status": "ok"}

@@ -1,5 +1,4 @@
 import boto3
-import csv
 import json
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -19,13 +18,10 @@ def process_html():
     """Procesa los archivos HTML de S3, extrae datos y guarda un CSV."""
     s3 = boto3.client("s3")
     today = datetime.today().strftime("%Y-%m-%d")
-
-    # Obtener todos los archivos del día en el bucket
     response = s3.list_objects_v2(
         Bucket=S3_BUCKET_INPUT, Prefix=f"{today}/"
     )
     files = [obj["Key"] for obj in response.get("Contents", [])]
-
     if not files:
         print("No se encontraron archivos en S3 para procesar.")
         return
@@ -35,14 +31,11 @@ def process_html():
         print(f"📂 Procesando archivo: {file_key}")
         obj = s3.get_object(Bucket=S3_BUCKET_INPUT, Key=file_key)
         html_content = obj["Body"].read().decode("utf-8")
-
         soup = BeautifulSoup(html_content, "html.parser")
         script_tag = soup.find("script", type="application/ld+json")
-
         if not script_tag:
             print(f"⚠️ No se encontró JSON en {file_key}")
             continue
-
         try:
             data = json.loads(script_tag.string)
             if isinstance(data, list) and data:
@@ -57,7 +50,6 @@ def process_html():
             try:
                 address = prop.get("address", {})
                 barrio = address.get("streetAddress", "N/A").split(",")[0].strip()
-
                 description = prop.get("description", "")
                 if "$" in description:
                     valor_raw = description.split("$")[-1].split("\n")[0].strip()
@@ -65,13 +57,12 @@ def process_html():
                     valor_raw = "N/A"
                 valor = (clean_price(valor_raw)
                          if valor_raw != "N/A" else "N/A")
-
                 habitaciones = prop.get("numberOfBedrooms", "N/A")
                 banos = prop.get("numberOfBathroomsTotal", "N/A")
                 mts2 = prop.get("floorSize", {}).get("value", "N/A")
-
-                results.append([today, barrio, valor, habitaciones,
-                                banos, mts2])
+                results.append(
+                    [today, barrio, valor, habitaciones, banos, mts2]
+                )
             except Exception as e:
                 print(f"⚠️ Error procesando propiedad en {file_key}: {e}")
                 continue
@@ -81,12 +72,13 @@ def process_html():
         return
 
     csv_key = f"{today}/{today}.csv"
-    csv_header = ("FechaDescarga,Barrio,Valor,NumHabitaciones,NumBanos,"
-                  "mts2\n")
+    csv_header = (
+        "FechaDescarga,Barrio,Valor,NumHabitaciones,NumBanos,"
+        "mts2\n"
+    )
     csv_rows = "\n".join(
         [",".join(map(str, row)) for row in results]
     )
-
     s3.put_object(
         Bucket=S3_BUCKET_OUTPUT,
         Key=csv_key,
