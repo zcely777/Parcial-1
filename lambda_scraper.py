@@ -40,27 +40,21 @@ def download_html():
                     Body=response.text.encode("utf-8"),
                     ContentType="text/html"
                 )
-                print(
-                    "✅ Guardado en S3: "
-                    f"s3://{S3_BUCKET}/{today}/{file_name}"
-                )
+                print(f"✅ Guardado en S3: s3://{S3_BUCKET}/{today}/{file_name}")
                 break  # Salir del loop si todo está bien
 
             except RequestException as e:
                 attempt += 1
-                print(
-                    f"⚠ Error en pág. {i}, intento {attempt}: {e}"
-                )
+                print(f"⚠ Error en pág. {i}, intento {attempt}: {e}")
                 time.sleep(2 ** attempt)  # Espera exponencial: 2s, 4s, 8s
 
         if attempt == 3:
-            print(
-                f"❌ Falló la descarga de la pág. {i} después de 3 intentos"
-            )
+            print(f"❌ Falló la descarga de la pág. {i} después de 3 intentos")
 
     return {"status": "ok"}
 
 
 def lambda_handler(event, context):
     """Función Lambda para ejecutar la descarga de HTML."""
-    return download_html()
+    return download_html()
+

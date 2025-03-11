@@ -1,8 +1,8 @@
 import boto3
 import csv
+import json
 from bs4 import BeautifulSoup
 from datetime import datetime
-import json
 
 # Buckets S3
 S3_BUCKET_INPUT = "zappa-8jwijavgz"  # Bucket de entrada
@@ -29,15 +29,11 @@ def extract_data_from_html(html_content):
     if script_tag:
         try:
             data = json.loads(script_tag.string)
-            properties = (
-                data[0].get("about", []) if isinstance(data, list) else []
-            )
+            properties = data[0].get("about", []) if isinstance(data, list) else []
 
             for prop in properties:
                 address = prop.get("address", {})
-                barrio = address.get(
-                    "streetAddress", "N/A"
-                ).split(",")[0].strip()
+                barrio = address.get("streetAddress", "N/A").split(",")[0].strip()
                 description = prop.get("description", "")
 
                 valor_raw = (
@@ -50,9 +46,7 @@ def extract_data_from_html(html_content):
                 banos = prop.get("numberOfBathroomsTotal", "N/A")
                 mts2 = prop.get("floorSize", {}).get("value", "N/A")
 
-                listings.append(
-                    [today, barrio, valor, habitaciones, banos, mts2]
-                )
+                listings.append([today, barrio, valor, habitaciones, banos, mts2])
         except (json.JSONDecodeError, KeyError) as e:
             print(f"❌ Error procesando JSON: {str(e)}")
 
@@ -78,9 +72,7 @@ def extract_data_from_html(html_content):
                 mts2 = listing.select_one(".listing-area")
                 mts2 = mts2.text.strip() if mts2 else "N/A"
 
-                listings.append(
-                    [today, barrio, valor, num_habitaciones, num_banos, mts2]
-                )
+                listings.append([today, barrio, valor, num_habitaciones, num_banos, mts2])
             except Exception as e:
                 print(f"⚠ Error procesando una propiedad: {e}")
 
@@ -88,6 +80,7 @@ def extract_data_from_html(html_content):
 
 
 def process_html_file(bucket, key):
+    """Procesa un archivo HTML almacenado en S3 y genera un CSV."""
     s3 = boto3.client("s3")
     response = s3.get_object(Bucket=bucket, Key=key)
     html_content = response["Body"].read().decode("utf-8")
@@ -104,10 +97,9 @@ def process_html_file(bucket, key):
     with open(temp_file, "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow(
-            ["FechaDescarga", "Barrio", "Valor", "NumHabitaciones",
-             "NumBanos", "mts2"]
+            ["FechaDescarga", "Barrio", "Valor", "NumHabitaciones", "NumBanos", "mts2"]
         )
         writer.writerows(data)
 
     s3.upload_file(temp_file, S3_BUCKET_OUTPUT, output_key)
-    print(f"✅ CSV guardado en s3://{S3_BUCKET_OUTPUT}/{output_key}")
+    print(f"✅ CSV guardado en s3://{S3_BUCKET_OUTPUT}/{output_key}\n")
