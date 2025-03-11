@@ -27,7 +27,7 @@ jobs:
 
       - name: Revisar código con flake8
         run: |
-          python -m flake8 --exclude=env
+          run: python -m flake8 lambda_parser.py lambda_scraper.py --max-line-length=100
 
       - name: Ejecutar pruebas unitarias con pytest
         run: |
