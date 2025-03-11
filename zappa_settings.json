@@ -19,7 +19,8 @@
         "events": [
           {
             "function": "lambda_scraper.download_html",
-            "expression":  "(rate 1 minute)"
+            "expression": "rate(1 minute)"
+
           }
         ]
     },
