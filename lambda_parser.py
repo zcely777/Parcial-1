@@ -82,7 +82,7 @@ def process_html():
 
     csv_key = f"{today}/{today}.csv"
     csv_header = (
-        "FechaDescarga;Barrio;Valor;NumHabitaciones;NumBanos,cts2\n"
+        "FechaDescarga;Barrio;Valor;NumHabitaciones;NumBanos;cts2\n"
     )
     csv_rows = "\n".join(
         [";".join(map(str, row)) for row in results]
