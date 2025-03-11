@@ -50,21 +50,28 @@ def process_html():
         for prop in properties:
             try:
                 address = prop.get("address", {})
-                barrio = address.get("streetAddress", "N/A").split(",")[0].strip()
+                barrio = (
+                    address.get("streetAddress", "N/A")
+                    .split(",")[0].strip()
+                )
                 description = prop.get("description", "")
                 if "$" in description:
-                    valor_raw = (description.split("$")[-1]
-                                 .split("\n")[0].strip())
+                    valor_raw = (
+                        description.split("$")[-1]
+                        .split("\n")[0].strip()
+                    )
                 else:
                     valor_raw = "N/A"
-                valor = (clean_price(valor_raw)
-                         if valor_raw != "N/A" else "N/A")
+                valor = (
+                    clean_price(valor_raw)
+                    if valor_raw != "N/A" else "N/A"
+                )
                 habitaciones = prop.get("numberOfBedrooms", "N/A")
                 banos = prop.get("numberOfBathroomsTotal", "N/A")
                 mts2 = prop.get("floorSize", {}).get("value", "N/A")
-                results.append(
-                    [today, barrio, valor, habitaciones, banos, mts2]
-                )
+                results.append([
+                    today, barrio, valor, habitaciones, banos, mts2
+                ])
             except Exception as e:
                 print(f"⚠️ Error procesando propiedad en {file_key}: {e}")
                 continue
