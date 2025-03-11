@@ -27,7 +27,7 @@ jobs:
 
       - name: 🔍 Revisar código con flake8
         run: |
-          flake8 --max-line-length=100 --exclude=env
+          python -m flake8 --exclude=env
 
       - name: Ejecutar pruebas unitarias con pytest
         run: |
