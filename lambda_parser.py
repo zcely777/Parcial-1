@@ -52,17 +52,21 @@ def process_html():
                 barrio = address.get("streetAddress", "N/A").split(",")[0].strip()
                 description = prop.get("description", "")
                 if "$" in description:
-                    valor_raw = description.split("$")[-1].split("\n")[0].strip()
+                    valor_raw = (
+                        description.split("$")[-1]
+                        .split("\n")[0]
+                        .strip()
+                    )
                 else:
                     valor_raw = "N/A"
-                valor = (clean_price(valor_raw)
-                         if valor_raw != "N/A" else "N/A")
+                valor = (
+                    clean_price(valor_raw)
+                    if valor_raw != "N/A" else "N/A"
+                )
                 habitaciones = prop.get("numberOfBedrooms", "N/A")
                 banos = prop.get("numberOfBathroomsTotal", "N/A")
                 mts2 = prop.get("floorSize", {}).get("value", "N/A")
-                results.append(
-                    [today, barrio, valor, habitaciones, banos, mts2]
-                )
+                results.append([today, barrio, valor, habitaciones, banos, mts2])
             except Exception as e:
                 print(f"⚠️ Error procesando propiedad en {file_key}: {e}")
                 continue
@@ -73,22 +77,7 @@ def process_html():
 
     csv_key = f"{today}/{today}.csv"
     csv_header = (
-        "FechaDescarga,Barrio,Valor,NumHabitaciones,NumBanos,"
-        "mts2\n"
+        "FechaDescarga,Barrio,Valor,NumHabitaciones,NumBanos,mts2\n"
     )
     csv_rows = "\n".join(
-        [",".join(map(str, row)) for row in results]
-    )
-    s3.put_object(
-        Bucket=S3_BUCKET_OUTPUT,
-        Key=csv_key,
-        Body=csv_header + csv_rows,
-        ContentType="text/csv",
-    )
-    print(f"✅ Archivo guardado en {S3_BUCKET_OUTPUT}/{csv_key}")
-
-
-def lambda_handler(event, context):
-    """Función principal de AWS Lambda."""
-    process_html()
-    return {"statusCode": 200, "body": "Procesamiento completado"}
+        [",".join(map(str
