@@ -29,11 +29,13 @@ jobs:
         run: |
           pytest prueba_uni.py
           
-      - name: 📦 Crear y activar entorno virtual
+      - name: Crear y activar entorno virtual
         run: |
           python -m venv env
+          echo "Activando entorno virtual..."
           source env/bin/activate
-          python -m pip install --upgrade pip
+          echo "✅ Virtualenv activado"
+          pip install --upgrade pip
           pip install zappa
           
       - name: Desplegar en AWS con Zappa
