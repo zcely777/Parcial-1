@@ -35,6 +35,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}  
         run: |
-          zappa deploy dev
-          zappa deploy dev2
-          zappa status dev
+          zappa update dev
+          zappa update dev2
