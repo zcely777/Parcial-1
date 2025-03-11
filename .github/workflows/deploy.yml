@@ -31,7 +31,7 @@ jobs:
           
       - name: Crear y activar entorno virtual
         run: |
-          python -m venv env
+          python3.9 -m venv env  # Crear el entorno con Python 3.9
           source env/bin/activate
           python -m pip install --upgrade pip
           pip install setuptools wheel
