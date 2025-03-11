@@ -25,6 +25,10 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: 🔍 Revisar código con flake8
+        run: |
+          flake8 --max-line-length=100 --exclude=env
+
       - name: Ejecutar pruebas unitarias con pytest
         run: |
           pytest prueba_uni.py
