@@ -28,11 +28,7 @@ jobs:
       - name: Ejecutar pruebas unitarias con pytest
         run: |
           pytest prueba_uni.py
-
-      - name: Verificar configuración de AWS
-        run: |
-          aws sts get-caller-identity
-
+          
       - name: Desplegar en AWS con Zappa
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
