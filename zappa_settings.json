@@ -19,7 +19,7 @@
         "events": [
           {
             "function": "lambda_scraper.download_html",
-            "expression": "rate(1 minute)"
+            "expression": "cron(0 9 ? * 2 *)"
 
           }
         ]
