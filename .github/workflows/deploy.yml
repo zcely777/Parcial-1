@@ -25,9 +25,8 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: 🔍 Revisar código con flake8
-        run: |
-          python -m flake8 --exclude=env
+      - name: flake8
+        run: flake8 .
 
       - name: Ejecutar pruebas unitarias con pytest
         run: |
